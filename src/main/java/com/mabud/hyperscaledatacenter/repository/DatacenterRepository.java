@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface DatacenterRepository extends JpaRepository<Datacenter, UUID> {//JpaRepository takes 2 parameter the entity(Datacenter) and the type of it's @Id field(Id) which is UUID here
     List<Datacenter> findByCity(String city);
+
 }

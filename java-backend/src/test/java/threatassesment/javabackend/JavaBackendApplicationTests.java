@@ -1,10 +1,10 @@
-package com.mabud.hyperscaledatacenter;
+package threatassesment.javabackend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class HyperScaleDatacenterApplicationTests {
+class JavaBackendApplicationTests {
 
     @Test
     void contextLoads() {

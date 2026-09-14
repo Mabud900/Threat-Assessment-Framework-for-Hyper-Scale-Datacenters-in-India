@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MapView from '../components/MapView';
+import RadarChart from '../components/RadarChart';
 import { cities, riskTiers, cstiFormula, dataSources } from '../data';
 
 export default function Dashboard() {
@@ -83,10 +84,8 @@ export default function Dashboard() {
             </h2>
             {selectedCity ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-slate-900 p-4 rounded-lg border border-slate-700 flex items-center justify-center h-64">
-                  <div className="w-32 h-32 bg-cyan-500/20 rounded-full flex items-center justify-center text-cyan-400 font-bold">
-                    CSTI Radar Chart
-                  </div>
+                <div className="bg-slate-900 p-4 rounded-lg border border-slate-700">
+                  <RadarChart scores={selectedCity.scores} csti={selectedCity.csti} tier={selectedCity.tier} />
                 </div>
                 <div className="md:col-span-2 grid grid-cols-2 gap-4">
                   <div className="bg-slate-900 p-4 rounded-lg border border-slate-700">

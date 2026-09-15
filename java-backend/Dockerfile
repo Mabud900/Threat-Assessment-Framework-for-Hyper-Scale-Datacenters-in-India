@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk-slim
+FROM eclipse-temr17:jdk-focal
 
 WORKDIR /app
 

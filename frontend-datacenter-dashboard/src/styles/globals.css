@@ -1,3 +1,297 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  --bg-primary: #030712;
+  --bg-secondary: #0b1120;
+  --bg-tertiary: #111d33;
+  --border-primary: rgba(51, 65, 85, 0.6);
+  --border-glow: rgba(6, 182, 212, 0.4);
+  --accent-cyan: #06b6d4;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+  --accent-purple: #8b5cf6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-primary);
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-primary);
+  color: #f1f5f9;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Monospace telemetry */
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Custom modern scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0b1120;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Sleek Glassmorphism Cards */
+.cyber-card {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(51, 65, 85, 0.6);
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cyber-card:hover {
+  border-color: rgba(6, 182, 212, 0.4);
+  box-shadow: 0 15px 35px -10px rgba(6, 182, 212, 0.15);
+}
+
+.cyber-card-glow {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(11, 17, 32, 0.95));
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  box-shadow: 0 0 25px rgba(6, 182, 212, 0.12);
+}
+
+/* Leaflet Map overrides for Cyber Aesthetic */
+.leaflet-container {
+  font-family: 'Inter', sans-serif !important;
+  background: #070c18 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0.75rem;
+}
+
+/* Map tiles dark filter */
+.leaflet-tile-pane {
+  filter: brightness(0.9) contrast(1.15) hue-rotate(190deg) saturate(0.85);
+}
+
+/* Custom Glass Popup */
+.leaflet-popup-content-wrapper {
+  background: rgba(11, 17, 32, 0.92) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(6, 182, 212, 0.4) !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(6, 182, 212, 0.2) !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-content {
+  margin: 14px 16px !important;
+  color: #f1f5f9 !important;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+}
+
+.leaflet-popup-tip {
+  background: rgba(11, 17, 32, 0.92) !important;
+  border: 1px solid rgba(6, 182, 212, 0.4) !important;
+}
+
+.leaflet-popup-close-button {
+  color: #94a3b8 !important;
+  padding: 6px !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: #06b6d4 !important;
+}
+
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+.leaflet-control-zoom a {
+  background: rgba(15, 23, 42, 0.85) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(51, 65, 85, 0.8) !important;
+  color: #38bdf8 !important;
+  border-radius: 8px !important;
+  margin-bottom: 4px !important;
+  width: 34px !important;
+  height: 34px !important;
+  line-height: 32px !important;
+  transition: all 0.2s ease !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: #06b6d4 !important;
+  color: #030712 !important;
+  border-color: #06b6d4 !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(3, 7, 18, 0.8) !important;
+  color: #64748b !important;
+  font-size: 10px !important;
+  border-radius: 6px 0 0 0 !important;
+  padding: 2px 8px !important;
+}
+
+/* Custom Leaflet Pulsing Markers */
+.custom-radar-marker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.marker-pulse-ring {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  animation: radar-ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+.marker-core-dot {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2.5px solid #ffffff;
+  box-shadow: 0 0 12px currentColor, 0 4px 8px rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.custom-radar-marker:hover .marker-core-dot {
+  transform: scale(1.35);
+}
+
+@keyframes radar-ping {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  80%, 100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* Color codes for markers */
+.marker-tier-1 .marker-core-dot {
+  background-color: #10b981;
+  color: #10b981;
+}
+.marker-tier-1 .marker-pulse-ring {
+  background-color: rgba(16, 185, 129, 0.4);
+}
+
+.marker-tier-2 .marker-core-dot {
+  background-color: #f59e0b;
+  color: #f59e0b;
+}
+.marker-tier-2 .marker-pulse-ring {
+  background-color: rgba(245, 158, 11, 0.4);
+}
+
+.marker-tier-3 .marker-core-dot {
+  background-color: #f43f5e;
+  color: #f43f5e;
+}
+.marker-tier-3 .marker-pulse-ring {
+  background-color: rgba(244, 63, 94, 0.4);
+}
+
+.marker-tier-4 .marker-core-dot {
+  background-color: #8b5cf6;
+  color: #8b5cf6;
+}
+.marker-tier-4 .marker-pulse-ring {
+  background-color: rgba(139, 92, 246, 0.4);
+}
+
+/* Fade in animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Soft pulse */
+@keyframes softPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(0.96);
+  }
+}
+
+.animate-soft-pulse {
+  animation: softPulse 2s ease-in-out infinite;
+}
+
+/* Clean Print Styling for PDF Generation */
+@media print {
+  body {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+  }
+
+  nav, .no-print, aside, button {
+    display: none !important;
+  }
+
+  .cyber-card, .cyber-card-glow {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: none !important;
+    color: #0f172a !important;
+  }
+
+  .text-white {
+    color: #0f172a !important;
+  }
+
+  .text-slate-400, .text-slate-300 {
+    color: #475569 !important;
+  }
+}
+

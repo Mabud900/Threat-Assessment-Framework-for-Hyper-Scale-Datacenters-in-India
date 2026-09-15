@@ -1,218 +1,146 @@
 import React, { useState, useEffect } from 'react';
+import Head from 'next/head';
+import Navbar from '../components/Navbar';
+import ThreatParameterPanel from '../components/ThreatParameterPanel';
 import MapView from '../components/MapView';
-import RadarChart from '../components/RadarChart';
-import { cities, riskTiers, cstiFormula, dataSources } from '../data';
+import CityComparisonPanel from '../components/CityComparisonPanel';
+import RiskTiersView from '../components/RiskTiersView';
+import LocationProfileView from '../components/LocationProfileView';
+import ReportsView from '../components/ReportsView';
+import { cities as initialCities } from '../data';
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('Dashboard');
-  const [selectedCity, setSelectedCity] = useState(null);
-  const [cityData, setCityData] = useState(cities);
+  const [cityData, setCityData] = useState(initialCities);
+  const [selectedCity, setSelectedCity] = useState(initialCities[0]);
+  const [selectedFilters, setSelectedFilters] = useState([
+    'POWER',
+    'WATER',
+    'CLIMATE',
+    'REGULATORY',
+    'INFRASTRUCTURE',
+  ]);
+  const [backendStatus, setBackendStatus] = useState('Live Telemetry');
 
   useEffect(() => {
     fetch('http://localhost:8080/api/dashboard/summary')
-      .then((res) => res.json())
-      .then((data) => setCityData(data.cities))
-      .catch(() => {/* keep local data.js fallback */});
+      .then((res) => {
+        if (!res.ok) throw new Error('not ok');
+        return res.json();
+      })
+      .then((data) => {
+        if (data && data.cities && data.cities.length > 0) {
+          const merged = initialCities.map((c) => {
+            const apiMatch = data.cities.find(
+              (ac) =>
+                ac.id?.toLowerCase() === c.id.toLowerCase() ||
+                ac.name?.toLowerCase() === c.name.toLowerCase()
+            );
+            if (apiMatch) {
+              return {
+                ...c,
+                csti: Math.round(apiMatch.csti ?? c.csti),
+                tier: apiMatch.tier || c.tier,
+                scores: { ...c.scores, ...(apiMatch.scores || {}) },
+              };
+            }
+            return c;
+          });
+          setCityData(merged);
+          setBackendStatus('Connected');
+        }
+      })
+      .catch(() => {
+        setBackendStatus('Standalone Telemetry');
+      });
   }, []);
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'Dashboard': {
-        return (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <MapView onSelectCity={(city) => {
-                setSelectedCity(city);
-                setActiveTab('Location Profile');
-              }} selectedCity={selectedCity} />
-            </div>
+  const handleToggleFilter = (filterId) => {
+    setSelectedFilters((prev) =>
+      prev.includes(filterId)
+        ? prev.filter((id) => id !== filterId)
+        : [...prev, filterId]
+    );
+  };
 
-            <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 h-[400px] overflow-y-auto">
-              <h3 className="text-lg font-semibold text-white mb-4">City Comparison</h3>
-              <div className="space-y-3">
-                {cityData.map((city) => (
-                  <div
-                    key={city.id}
-                    className="bg-slate-900 p-3 rounded-lg border border-slate-700 cursor-pointer hover:border-cyan-500"
-                    onClick={() => {
-                      setSelectedCity(city);
-                      setActiveTab('Location Profile');
-                    }}
-                  >
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="font-medium text-white">{city.name}</span>
-                      <span className="text-xs text-cyan-400">{city.tier}</span>
-                    </div>
-                    <div className="w-full bg-slate-700 rounded-full h-2.5">
-                      <div
-                        className="bg-cyan-500 h-2.5 rounded-full"
-                        style={{ width: `${city.csti}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-      }
+  const handleResetFilters = () => {
+    setSelectedFilters(['POWER', 'WATER', 'CLIMATE', 'REGULATORY', 'INFRASTRUCTURE']);
+  };
 
-      case 'Risk Tiers':
-        return (
-          <div className="bg-slate-800 p-6 rounded-xl border border-slate-700">
-            <h2 className="text-2xl font-bold text-white mb-6">Risk Tier Explorer</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {riskTiers.map((tier, idx) => (
-                <div key={idx} className="bg-slate-900 p-4 rounded-lg border border-slate-700 hover:border-cyan-500 transition-colors">
-                  <span className="text-xs font-bold text-cyan-400 bg-cyan-900/50 px-2 py-1 rounded">{tier.tier}</span>
-                  <h3 className="text-xl text-white mt-3 mb-2">{tier.risk}</h3>
-                  <p className="text-slate-400 text-sm mb-4">{tier.description}</p>
-                  <div className="text-xs text-slate-500">
-                    <strong>Examples:</strong> {tier.examples.join(', ')}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-
-      case 'Location Profile':
-        return (
-          <div className="bg-slate-800 p-6 rounded-xl border border-slate-700">
-            <h2 className="text-2xl font-bold text-white mb-6">
-              Location Profile: {selectedCity?.name || 'Select a City'}
-            </h2>
-            {selectedCity ? (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-slate-900 p-4 rounded-lg border border-slate-700">
-                  <RadarChart scores={selectedCity.scores} csti={selectedCity.csti} tier={selectedCity.tier} />
-                </div>
-                <div className="md:col-span-2 grid grid-cols-2 gap-4">
-                  <div className="bg-slate-900 p-4 rounded-lg border border-slate-700">
-                    <h4 className="text-slate-400 text-sm">CSTI Score</h4>
-                    <p className="text-3xl font-bold text-white">{selectedCity.csti}/100</p>
-                  </div>
-                  <div className="bg-slate-900 p-4 rounded-lg border border-slate-700">
-                    <h4 className="text-slate-400 text-sm">Assigned Tier</h4>
-                    <p className="text-3xl font-bold text-cyan-400">{selectedCity.tier}</p>
-                  </div>
-                  <div className="bg-slate-900 p-4 rounded-lg border border-slate-700 col-span-2">
-                    <h4 className="text-slate-400 text-sm mb-2">Backend Microservice Status</h4>
-                    <div className="flex gap-2 text-xs">
-                      <span className="bg-green-900/50 text-green-400 px-2 py-1 rounded">Data-Ingestion: Active</span>
-                      <span className="bg-green-900/50 text-green-400 px-2 py-1 rounded">Ember-API: Synced</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <p className="text-slate-400">Please go to Dashboard and select a city.</p>
-            )}
-          </div>
-        );
-
-      case 'Reports':
-        return (
-          <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-6">
-            <h2 className="text-2xl font-bold text-white">Reports & Methodology</h2>
-
-            <div className="bg-slate-900 p-4 rounded-lg border border-slate-700">
-              <h3 className="text-lg font-semibold text-cyan-400 mb-2">CSTI Calculation Formula</h3>
-              <p className="text-slate-300 bg-slate-950 p-3 rounded font-mono text-sm">{cstiFormula}</p>
-            </div>
-
-            <div className="bg-slate-900 p-4 rounded-lg border border-slate-700">
-              <h3 className="text-lg font-semibold text-cyan-400 mb-4">Data Source Catalog</h3>
-              <div className="space-y-3">
-                {dataSources.map((src, i) => (
-                  <div key={i} className="border-b border-slate-800 pb-2">
-                    <div className="flex justify-between">
-                      <span className="font-bold text-white">{src.name}</span>
-                      <span className="text-xs bg-slate-700 px-2 py-1 rounded text-slate-300">{src.type}</span>
-                    </div>
-                    <p className="text-sm text-slate-400 mt-1">{src.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-
-      default:
-        return (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <MapView onSelectCity={(city) => {
-                setSelectedCity(city);
-                setActiveTab('Location Profile');
-              }} selectedCity={selectedCity} />
-            </div>
-
-            <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 h-[400px] overflow-y-auto">
-              <h3 className="text-lg font-semibold text-white mb-4">City Comparison</h3>
-              <div className="space-y-3">
-                {cityData.map((city) => (
-                  <div
-                    key={city.id}
-                    className="bg-slate-900 p-3 rounded-lg border border-slate-700 cursor-pointer hover:border-cyan-500"
-                    onClick={() => {
-                      setSelectedCity(city);
-                      setActiveTab('Location Profile');
-                    }}
-                  >
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="font-medium text-white">{city.name}</span>
-                      <span className="text-xs text-cyan-400">{city.tier}</span>
-                    </div>
-                    <div className="w-full bg-slate-700 rounded-full h-2.5">
-                      <div
-                        className="bg-cyan-500 h-2.5 rounded-full"
-                        style={{ width: `${city.csti}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-    }
+  const handleSelectCity = (city) => {
+    setSelectedCity(city);
+    setActiveTab('Location Profile');
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans flex flex-col md:flex-row">
-      <aside className="w-full md:w-64 bg-slate-900 border-r border-slate-800 p-6 flex flex-col">
-        <h1 className="text-xl font-bold text-white mb-8 leading-tight">
-          HYPERSCALE DC<br/><span className="text-cyan-500 text-sm">Threat Assessment Portal</span>
-        </h1>
-        <nav className="space-y-2 flex-1">
-          {['Dashboard', 'Location Profile', 'Risk Tiers', 'Reports'].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
-                activeTab === tab ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </nav>
-        <div className="mt-8 text-xs text-slate-600">
-          <p>Backend: Java Spring Boot</p>
-        </div>
-      </aside>
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+      <Head>
+        <title>Hyperscale DC Threat Assessment Portal | India</title>
+        <meta name="description" content="Real-time multi-hazard threat assessment for Indian hyperscale datacenters." />
+      </Head>
 
-      <main className="flex-1 p-6 md:p-10 overflow-y-auto">
-        <header className="mb-8">
-          <h2 className="text-3xl font-bold text-white">{activeTab}</h2>
-          <p className="text-slate-500">
-            Real-time monitoring and assessment of hyperscale data center threats in India.
-          </p>
-        </header>
+      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} backendStatus={backendStatus} />
 
-        {renderContent()}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+        {activeTab === 'Dashboard' && (
+          <div className="space-y-6 animate-fade-in-up">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+              <div className="lg:col-span-4 h-full">
+                <ThreatParameterPanel
+                  selectedFilters={selectedFilters}
+                  onToggleFilter={handleToggleFilter}
+                  onResetFilters={handleResetFilters}
+                  cities={cityData}
+                />
+              </div>
+              <div className="lg:col-span-8 h-full min-h-[440px]">
+                <MapView
+                  cities={cityData}
+                  selectedCity={selectedCity}
+                  onSelectCity={handleSelectCity}
+                  selectedFilters={selectedFilters}
+                />
+              </div>
+            </div>
+            <CityComparisonPanel cities={cityData} onSelectCity={handleSelectCity} />
+          </div>
+        )}
+
+        {activeTab === 'Risk Tiers' && (
+          <div className="animate-fade-in-up">
+            <RiskTiersView />
+          </div>
+        )}
+
+        {activeTab === 'Location Profile' && (
+          <div className="animate-fade-in-up">
+            <LocationProfileView
+              cities={cityData}
+              selectedCity={selectedCity}
+              onSelectCity={(city) => setSelectedCity(city)}
+            />
+          </div>
+        )}
+
+        {activeTab === 'Reports' && (
+          <div className="animate-fade-in-up">
+            <ReportsView />
+          </div>
+        )}
       </main>
+
+      <footer className="mt-12 border-t border-slate-900 bg-slate-950/90 py-6 px-4">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-cyan-500"></span>
+            <span className="font-semibold text-slate-400">Hyperscale DC Threat Assessment Framework (India)</span>
+          </div>
+          <div className="font-mono">
+            Compliant with CEA &bull; WRI Aqueduct 4.0 &bull; Uptime Institute Tier Standards
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
+

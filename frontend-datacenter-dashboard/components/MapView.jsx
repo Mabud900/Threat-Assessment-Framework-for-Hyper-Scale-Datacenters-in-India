@@ -45,13 +45,13 @@ export default function MapView({
       // Custom zoom control in top-right
       L.control.zoom({ position: 'topright' }).addTo(map);
 
-      // CartoDB Voyager Tiles
+      // OpenStreetMap Tiles (100% Free, Open-Source, No API Key Required)
       L.tileLayer(
-        'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         {
           attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
-          subdomains: 'abcd',
+            '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+          subdomains: ['a', 'b', 'c'],
           maxZoom: 19,
         }
       ).addTo(map);
@@ -228,7 +228,7 @@ export default function MapView({
         </svg>
         <span className="font-semibold text-white">Interactive India Map</span>
         <span className="text-[10px] text-cyan-400 font-mono px-1.5 py-0.5 rounded bg-cyan-950 border border-cyan-800/60">
-          Leaflet.js
+          OpenStreetMap
         </span>
       </div>
 

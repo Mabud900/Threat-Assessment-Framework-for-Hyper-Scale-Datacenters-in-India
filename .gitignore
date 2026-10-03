@@ -37,7 +37,7 @@ target/
 /.mvn
 
 # Your specific untracked folder (keep outside git)
-"HyperScale DataCenter Risk OpenData API"/
+HyperScale DataCenter Risk OpenData API/
 
 # demo folder
 demo/

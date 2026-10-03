@@ -1,4 +1,5 @@
 import React from 'react';
+import ThemeToggle from './ThemeToggle';
 
 export default function Navbar({ activeTab, setActiveTab, backendStatus = 'Connected' }) {
   const navItems = [
@@ -27,19 +28,22 @@ export default function Navbar({ activeTab, setActiveTab, backendStatus = 'Conne
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-base tracking-wider text-white">HYPERSCALE DataCenter</span>
+                <span className="font-extrabold text-base tracking-wider text-white">HYPERSCALE DC</span>
                 <span className="px-1.5 py-0.5 text-[10px] font-bold tracking-wide rounded bg-cyan-950 text-cyan-400 border border-cyan-800/60">
-                  India
+                  INDIA
                 </span>
               </div>
               <p className="text-xs text-slate-400 tracking-tight font-medium">Threat Assessment & Resiliency Portal</p>
             </div>
           </div>
 
-          {/* Backend Status indicator (Mobile) */}
-          <div className="flex md:hidden items-center gap-2 px-2.5 py-1 rounded-full bg-slate-900/90 border border-slate-800 text-xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="text-slate-300 font-mono text-[11px]">{backendStatus}</span>
+          {/* Mobile Right utilities: Theme Toggle + Status Pill */}
+          <div className="flex md:hidden items-center gap-2">
+            <ThemeToggle />
+            <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-slate-900/90 border border-slate-800 text-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="text-slate-300 font-mono text-[11px]">{backendStatus}</span>
+            </div>
           </div>
         </div>
 
@@ -70,15 +74,16 @@ export default function Navbar({ activeTab, setActiveTab, backendStatus = 'Conne
           })}
         </nav>
 
-        {/* Right Status & Quick Utilities (Desktop) */}
+        {/* Right Status & Theme Toggle (Desktop) */}
         <div className="hidden md:flex items-center gap-3">
+          <ThemeToggle />
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900/80 border border-slate-800 text-xs">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
             <div className="flex flex-col">
-              <span className="text-[10px] text-slate-400 leading-none">DataCenter OpenData API</span>
+              <span className="text-[10px] text-slate-400 leading-none">DataCenterRisk OpenData API</span>
               <span className="text-emerald-400 font-mono text-[11px] font-semibold leading-tight">{backendStatus}</span>
             </div>
           </div>
@@ -87,4 +92,3 @@ export default function Navbar({ activeTab, setActiveTab, backendStatus = 'Conne
     </header>
   );
 }
-

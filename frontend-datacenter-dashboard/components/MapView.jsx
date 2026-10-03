@@ -32,7 +32,7 @@ export default function MapView({
           minZoom: 4,
           maxZoom: 10,
           zoomControl: false,
-          scrollWheelZoom: false,
+          scrollWheelZoom: true,
         });
 
         // Add custom zoom control on top right

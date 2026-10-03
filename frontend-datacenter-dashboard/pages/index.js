@@ -93,7 +93,7 @@ export default function Dashboard() {
                   cities={cityData}
                 />
               </div>
-              <div className="lg:col-span-8 h-full min-h-[440px]">
+              <div className="lg:col-span-8 h-full min-h-[500px]">
                 <MapView
                   cities={cityData}
                   selectedCity={selectedCity}

@@ -88,7 +88,24 @@ body {
   background: #070c18 !important;
   width: 100% !important;
   height: 100% !important;
+  min-height: 480px !important;
   border-radius: 0.75rem;
+  position: relative !important;
+  z-index: 0 !important;
+}
+
+/* Fix Leaflet map tiles conflict with Tailwind CSS preflight */
+.leaflet-container img,
+.leaflet-pane img,
+.leaflet-tile-container img {
+  max-width: none !important;
+  max-height: none !important;
+  width: auto;
+  height: auto;
+}
+
+.leaflet-tile {
+  visibility: inherit !important;
 }
 
 /* Map tiles dark filter */
